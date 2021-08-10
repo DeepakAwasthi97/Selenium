@@ -1,0 +1,98 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+
+public class ECommerceWebsitePractise {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		System.setProperty("webdriver.edge.driver", "C:\\Selenium\\msedgedriver.exe");
+		WebDriver driver = new EdgeDriver();
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+
+		String[] itemNames = { "MuskMELON", "wal nuts", "selenium", "brocolli", "POTATO", "TOM A TO", "webdriver" };
+		String promoCode = "rahulshettyacademy";
+		String cntName = "India";
+		int totalQuantity = 7;
+		driver.get("https://rahulshettyacademy.com/seleniumPractise/#/");
+
+		CheckForItems(driver, itemNames, wait, totalQuantity);
+		moveToNextPage(driver, wait, promoCode);
+		chooseCountry(driver, cntName);
+
+	}
+
+	public static void chooseCountry(WebDriver driver, String cntName) throws InterruptedException {
+		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		Select s = new Select(driver.findElement(By.xpath("//div[@class='products']/div/div/select")));
+		s.selectByValue(cntName);
+		driver.findElement(By.xpath("//button[contains(text(),'Proceed')]")).click();
+		Assert.assertTrue(driver.findElement(By.cssSelector(".errorAlert")).getAttribute("Style").contains("red"));
+		driver.findElement(By.cssSelector(".chkAgree")).click();
+		driver.findElement(By.xpath("//button[contains(text(),'Proceed')]")).click();
+
+	}
+
+	public static void moveToNextPage(WebDriver driver, WebDriverWait wait, String promoCode) {
+		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		driver.findElement(By.cssSelector("img[alt='Cart']")).click();
+		driver.findElement(By.xpath("//div[@class='cart-preview active']/div[2]/button")).click();
+		driver.findElement(By.cssSelector(".promoCode")).sendKeys(promoCode);
+		driver.findElement(By.cssSelector(".promoBtn")).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".promoInfo")));
+		Assert.assertTrue(driver.findElement(By.cssSelector(".promoInfo")).getAttribute("Style").contains("green"));
+		System.out.println(driver.findElement(By.cssSelector(".promoInfo")).getText());
+		driver.findElement(By.xpath("//button[contains(text(),'Place Order')]")).click();
+	}
+
+	public static void CheckForItems(WebDriver driver, String[] itemNames, WebDriverWait wait, int totalQuantity)
+			throws InterruptedException {
+
+		List<WebElement> increment = driver.findElements(By.cssSelector("a.increment"));
+		List<WebElement> productNames = driver.findElements(By.cssSelector("h4.product-name"));
+		System.out.println("Total No. of products extracted = " + productNames.size());
+		int j = itemNames.length;
+		int k = 0;
+		for (int i = 0; i < productNames.size() && productNames != null; i++) {
+
+			String[] product = productNames.get(i).getText().toLowerCase().split("-");
+			String formattedProdName = product[0].trim().replaceAll("\\s", "");
+			List<String> itemArrays = Arrays.asList(itemNames);
+			String items = itemArrays.toString().toLowerCase().trim().replaceAll("\\s", "");
+			// String qtyStr = Integer.toString(totalQuantity);
+
+			if (items.contains(formattedProdName)) {
+
+				k++;
+				for (int l = 1; l < totalQuantity; l++) {
+					increment.get(i).click();
+				}
+				String qtyValue = driver.findElements(By.xpath("//input[@class='quantity']")).get(i)
+						.getAttribute("value");
+				int intQtyValue = Integer.parseInt(qtyValue);
+				Assert.assertTrue(intQtyValue == totalQuantity);
+				Assert.assertEquals(intQtyValue, totalQuantity);
+				System.out.println("Item Matched, added " + productNames.get(i).getText() + " to your cart");
+				driver.findElements(By.cssSelector(".product-action button")).get(i).click();
+				if (k == j) {
+					break;
+				}
+			} else if (!itemArrays.contains(formattedProdName) && productNames != null) {
+				System.out.println("Item " + items + " does not contains " + formattedProdName);
+
+			}
+
+		}
+
+	}
+}
