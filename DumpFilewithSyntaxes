@@ -1,0 +1,62 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.support.ui.Select;
+
+
+public class Demo {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		//Invoke Microsoft Edge browser
+		System.setProperty("webdriver.edge.driver", "C:\\Selenium\\msedgedriver.exe");
+		
+		// Create Driver object for Edge
+		
+		WebDriver driver= new EdgeDriver();
+		//driver.get("https://www.google.com");
+		//System.out.println(driver.getTitle());
+		//System.out.println(driver.getCurrentUrl());
+		//System.out.println(driver.getPageSource());
+		//driver.get("https://www.facebook.com");
+		//driver.findElement(By.xpath("//input[contains(@placeholder,'Pass')]")).sendKeys("Regular Expression");
+		//driver.findElement(By.cssSelector("input[placeholder*='or']")).sendKeys("REgExp");
+		//driver.findElement(By.xpath("//*[text()='Games']")).click();
+		//driver.findElement(By.xpath("//div[@data-referrer='page_footer']/div[2]/ul/li[30]/a")).click(); // using parent child relationship
+		//driver.findElement(By.name("login")).click();
+		//driver.findElement(By.xpath("//button[@id='loginbutton']")).click();
+		//driver.findElement(By.cssSelector("button[value='1']")).click();// using CSS
+		//driver.findElement(By.cssSelector("button#loginbutton")).click();// using CSS #
+		//driver.findElement(By.cssSelector("input#email")).sendKeys("through customer CSS");// using CSS #
+		//System.out.println(driver.findElement(By.cssSelector("div._4rbf._53ij")).getText());
+		//driver.findElement(By.id("email")).sendKeys("From Selenium");
+		//driver.findElement(By.xpath("//*[@id=\'email\']")).sendKeys("Xpath Test");
+		//driver.findElement(By.cssSelector("#pass.inputtext._55r1._6luy")).sendKeys("CssSelectorTest");
+		//driver.findElement(By.xpath("//*[@id=\'u_0_a\']/div[3]/a")).click();
+		//driver.findElement(By.name("pass")).sendKeys("Selenium");
+		//driver.findElement(By.className("pass")).sendKeys("Selenium");
+		//driver.findElement(By.name("login")).click();
+		//driver.findElement(By.linkText("Forgotten account?")).click();
+		//driver.navigate().back();
+		//driver.navigate().forward();
+		//driver.close(); //closes current window
+		//driver.quit();// closes all the windows
+		
+		//for selecting drop down values
+		driver.get("https://www.goindigo.in");
+		Thread.sleep(5000);
+		Select S=new Select(driver.findElement(By.xpath("//*[@id='currencyView']/div/div/select")));
+
+		Thread.sleep(2000);
+
+		S.selectByValue("USD");
+		Thread.sleep(1000);
+		S.selectByIndex(4);
+		Thread.sleep(1000);
+		S.selectByVisibleText("Qatari Riyal");
+		Thread.sleep(1000);
+		String cur=driver.findElement(By.xpath("//*[@id='currencyView']/div/div/button/div/div/div")).getText();
+		System.out.println(cur);
+	}
+
+}
