@@ -1,0 +1,79 @@
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+import jdk.javadoc.internal.doclets.toolkit.util.JavaScriptScanner;
+
+public class CorousalAssignment {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		System.setProperty("webdriver.edge.driver", "C:\\Selenium\\msedgedriver_latest.exe");
+		WebDriver driver = new EdgeDriver();
+		driver.get("https://www.noon.com/uae-en/");
+		Actions action = new Actions(driver);
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		driver.manage().window().maximize();
+		driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
+		String section1 = "//h3[contains(text(),'Recommended for you')]";
+		String section2 = "//h3[text()='Top picks in laptops']";
+		String secRecommend = "//div[@data-qa='product-name']/div";
+
+		System.out.println("Item Names from Section : " + "'Recommended For You'"
+				+ "==================================================='");
+		getCorousalView(section1, driver, action, js);
+		getCorousalItems(driver, secRecommend);
+		System.out.println("Item Names from Section : " + "'Top picks in electronics'"
+				+ "===================================================");
+		getCorousalView(section2, driver, action, js);
+		getCorousalItems(driver, secRecommend);
+
+	}
+
+	public static void getCorousalView(String locator, WebDriver driver, Actions action, JavascriptExecutor js)
+			throws InterruptedException {
+
+		do {
+			try {
+
+				WebElement sec = driver.findElement(By.xpath(locator));
+				js.executeScript("arguments[0].scrollIntoView(true);", sec);
+				break;
+			} catch (NoSuchElementException e) {
+				action.sendKeys(Keys.PAGE_DOWN).perform();
+				Thread.sleep(1000);	
+			}
+		} while (true);
+	}
+
+	public static void getCorousalItems(WebDriver driver, String itemXpath) throws InterruptedException {
+		List<WebElement> itemName = driver.findElements(By.xpath(itemXpath));
+		int i = 1;
+		for (WebElement item : itemName) {
+
+			if (!item.isDisplayed()) {
+				driver.findElement(
+						By.xpath("//div[contains(@class,'swiper-button-next custom-navigation swiper-nav-')]")).click();
+				Thread.sleep(1000);
+				System.out.println(i + ". " + item.getText());
+				i++;
+
+			} else {
+				System.out.println(i + ". " + item.getText());
+				i++;
+
+			}
+		}
+
+	}
+}
